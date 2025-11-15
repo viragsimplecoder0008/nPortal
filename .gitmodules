@@ -1,0 +1,6 @@
+[submodule "nGl"]
+	path = nGl
+	url = https://github.com/Vogtinator/nGL
+[submodule "nGL"]
+	path = nGL
+	url = https://github.com/Vogtinator/nGL
