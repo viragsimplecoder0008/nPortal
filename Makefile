@@ -7,7 +7,7 @@ LD  = nspire-ld
 GENZEHN = genzehn
 
 GCCFLAGS = -Wall -W -marm
-LDFLAGS =
+LDFLAGS = -Wl,--nspireio
 ZEHNFLAGS = --name "nPortal" --author "Satyamedh Hulyalkar"
 
 ifeq ($(DEBUG),FALSE)
