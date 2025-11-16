@@ -53,12 +53,35 @@ bool PlayerInput::pollInput() {
             anyChanged = true;
         }
     }
+    touchpad_report_t newTouchpad;
+    touchpad_scan(&newTouchpad);
+
+    /*
+     * Touchpad input is read into a touchpad_report_t structure that contains:
+
+    contact - whether the touchpad is being touched
+    x and y coordinates of the touch
+    x_velocity and y_velocity
+    pressed - whether a key is pressed
+    arrow - which arrow area of the pad is touched
+     */
+
+    if (touchpad.contact != newTouchpad.contact ||
+        touchpad.x != newTouchpad.x ||
+        touchpad.y != newTouchpad.y ||
+        touchpad.x_velocity != newTouchpad.x_velocity ||
+        touchpad.y_velocity != newTouchpad.y_velocity ||
+        touchpad.pressed != newTouchpad.pressed ||
+        touchpad.arrow != newTouchpad.arrow) {
+            touchpad = newTouchpad;
+            anyChanged = true;
+    }
+
     return anyChanged;
 }
 
 bool PlayerInput::isDown(PlayerInput::Key key) {
     auto index = static_cast<std::size_t>(key);
-    // Use portable sizeof-based array length instead of std::size (requires C++17)
     const std::size_t keyStatesCount = sizeof(keyStates) / sizeof(keyStates[0]);
     if (index >= keyStatesCount) {
         return false;

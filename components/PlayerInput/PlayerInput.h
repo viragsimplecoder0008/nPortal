@@ -29,6 +29,7 @@ public:
     static Key fromPortalKey(const t_key &ndKey);
     static const t_key &toPortalKey(Key key);
     static bool isDown(Key key);
+    touchpad_report_t touchpad;
 
     bool pollInput();
 
