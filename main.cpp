@@ -1,6 +1,7 @@
 #include <libndls.h>
 #include <os.h>
 #include <cstdint>
+#include <cstdio>
 
 #include "components/PlayerInput/PlayerInput.h"
 #include "components/GameClock/GameClock.h"
@@ -8,6 +9,10 @@
 int main(){
     GameClock gameClock;
     PlayerInput input;
+
+    constexpr double FPS_REPORT_INTERVAL_MS = 1000.0;
+    uint32_t fps_frame_count = 0;
+    double fps_timer_ms = 0.0;
 
     gameClock.init_clock();
 
@@ -23,6 +28,16 @@ int main(){
         double delta_ms = gameClock.cycles_to_ms(delta_cycles);
 
         accumulator += static_cast<float>(delta_ms) / 1000.0f; // convert ms to seconds
+
+        fps_frame_count++;
+        fps_timer_ms += delta_ms;
+
+        if (fps_timer_ms >= FPS_REPORT_INTERVAL_MS) {
+            double fps = fps_timer_ms > 0.0 ? (fps_frame_count * 1000.0) / fps_timer_ms : 0.0;
+            printf("FPS: %.2f\n", fps);
+            fps_frame_count = 0;
+            fps_timer_ms = 0.0;
+        }
 
         input.pollInput();
 
