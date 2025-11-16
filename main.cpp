@@ -54,7 +54,7 @@ int main(){
 
         while (accumulator >= FIXED_TIMESTEP && gameClock.steps_run < MAX_STEPS_PER_FRAME) {
 
-            // game update logic here
+            // game update logic here (physics especially) using FIXED_TIMESTEP
 
             accumulator -= FIXED_TIMESTEP;
             gameClock.steps_run++;
