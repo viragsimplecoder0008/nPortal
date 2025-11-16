@@ -46,7 +46,7 @@ bool PlayerInput::pollInput() {
     // check if any key we track has changed state
     bool anyChanged = false;
     for (const KeyMapping &mapping : keyMappings) {
-        bool currentlyPressed = isKeyPressed(*mapping.ndKey);
+        bool currentlyPressed = isKeyPressed(mapping.ndKey);
         auto index = static_cast<std::size_t>(mapping.gameKey);
         if (keyStates[index] != currentlyPressed) {
             keyStates[index] = currentlyPressed;

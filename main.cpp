@@ -1,15 +1,50 @@
 #include <libndls.h>
-#include "components/PlayerInput/PlayerInput.h"
 #include <os.h>
+#include <cstdint>
+
+#include "components/PlayerInput/PlayerInput.h"
+#include "components/GameClock/GameClock.h"
 
 int main(){
-
+    GameClock gameClock;
     PlayerInput input;
-    while (true) {
-        input.pollInput();
-        printf("Forward key is %s\n", PlayerInput::isDown(PlayerInput::Key::Forward) ? "pressed" : "not pressed");
-        msleep(500); // Sleep for 500 milliseconds
-    }
-    return 0;
 
+    gameClock.init_clock();
+
+    uint32_t last_time = gameClock.get_time_cycles();
+
+    // disable interrupts to prevent timer interference
+    int int_state = TCT_Local_Control_Interrupts(-1);
+
+    float accumulator = 0.0f;
+
+    while (true) {
+        uint32_t delta_cycles = gameClock.get_delta_cycles(last_time);
+        double delta_ms = gameClock.cycles_to_ms(delta_cycles);
+
+        accumulator += delta_time;
+
+        input.pollInput();
+
+        if (PlayerInput::isDown(PlayerInput::Key::Escape)) {
+            break; // Exit the loop if Escape key is pressed
+        }
+
+        gameClock.steps_run = 0;
+
+        while (accumulator >= FIXED_TIMESTEP && gameClock.steps_run < MAX_STEPS_PER_FRAME) {
+
+            // game update logic here
+
+            accumulator -= FIXED_TIMESTEP;
+            gameClock.steps_run++;
+        }
+
+        // render here
+
+    }
+
+    TCT_Local_Control_Interrupts(int_state);
+
+    return 0;
 }
