@@ -64,6 +64,7 @@ int main(){
 
     }
 
+    graphics.deinit();
     logger.deinit();
 
     TCT_Local_Control_Interrupts(int_state);
