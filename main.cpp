@@ -62,6 +62,8 @@ int main(){
 
     }
 
+    logger.deinit();
+
     TCT_Local_Control_Interrupts(int_state);
 
     return 0;
