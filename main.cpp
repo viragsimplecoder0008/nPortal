@@ -61,7 +61,7 @@ int main(){
         }
 
         // render here
-
+        graphics.loop();
     }
 
     graphics.deinit();

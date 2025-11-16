@@ -13,6 +13,8 @@ public:
     void init();
     void deinit();
 
+    void loop();
+
 
 private:
     COLOR *framebuffer;
