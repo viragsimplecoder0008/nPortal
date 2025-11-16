@@ -11,6 +11,8 @@
 
 #define UART_ADDR 0x90020000
 
+#define DEBUGGING_MODE 1
+
 class Logger {
 public:
     void init();

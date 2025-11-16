@@ -9,6 +9,7 @@ void Logger::init() {
 }
 
 void Logger::printf(const char* format, ...) {
+#if DEBUGGING_MODE
     volatile char* uart_base = reinterpret_cast<volatile char*>(UART_ADDR);
     volatile char* uart_dr = uart_base + 0x00;   // Data Register
     volatile char* uart_fr = uart_base + 0x18;   // Flag Register
@@ -33,6 +34,7 @@ void Logger::printf(const char* format, ...) {
         while (*(uart_fr) & (1 << 5)); // Wait while TXFF (
         *(uart_dr) = buffer[i];
     }
+#endif
 }
 
 void Logger::deinit() {
