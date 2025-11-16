@@ -5,16 +5,19 @@
 
 #include "components/PlayerInput/PlayerInput.h"
 #include "components/GameClock/GameClock.h"
+#include "components/Logger/Logger.h"
 
 int main(){
     GameClock gameClock;
     PlayerInput input;
+    Logger logger;
 
     constexpr double FPS_REPORT_INTERVAL_MS = 1000.0;
     uint32_t fps_frame_count = 0;
     double fps_timer_ms = 0.0;
 
     gameClock.init_clock();
+    logger.init();
 
     uint32_t last_time = gameClock.get_time_cycles();
 
@@ -34,7 +37,7 @@ int main(){
 
         if (fps_timer_ms >= FPS_REPORT_INTERVAL_MS) {
             double fps = fps_timer_ms > 0.0 ? (fps_frame_count * 1000.0) / fps_timer_ms : 0.0;
-            printf("FPS: %.2f\n", fps);
+            logger.printf("FPS: %.2f\n", fps);
             fps_frame_count = 0;
             fps_timer_ms = 0.0;
         }
