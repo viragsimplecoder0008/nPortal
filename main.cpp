@@ -22,7 +22,7 @@ int main(){
         uint32_t delta_cycles = gameClock.get_delta_cycles(last_time);
         double delta_ms = gameClock.cycles_to_ms(delta_cycles);
 
-        accumulator += delta_time;
+        accumulator += static_cast<float>(delta_ms) / 1000.0f; // convert ms to seconds
 
         input.pollInput();
 
