@@ -8,9 +8,17 @@
 #include <libndls.h>
 #include <cstddef>
 
-#ifdef isKeyPressed
-#undef isKeyPressed
-#endif
+//typedef struct {
+//    unsigned char contact; /* "touched". TRUE or FALSE */
+//    unsigned char proximity;
+//    uint16_t x;
+//    uint16_t y;
+//    unsigned char x_velocity;
+//    unsigned char y_velocity;
+//    uint16_t dummy;
+//    unsigned char pressed; /* "key pressed". TRUE or FALSE */
+//    unsigned char arrow; /* area of the pad currently touched. see tpad_arrow_t. */
+//} touchpad_report_t;
 
 class InputController {
 public:
