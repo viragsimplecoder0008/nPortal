@@ -2,7 +2,7 @@
 // Created by Satyamedh on 15-11-2025.
 //
 
-#include "PlayerInput.h"
+#include "Input.h"
 
 const PlayerInput::KeyMapping PlayerInput::keyMappings[] = {
         { Key::Forward,   &KEY_NSPIRE_8 },
