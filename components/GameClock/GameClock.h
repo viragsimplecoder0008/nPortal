@@ -12,7 +12,7 @@
 #define CLOCK_FREQ 32768 // 32 kHz
 
 #define TARGET_FPS 30
-#define FIXED_TIMESTEP 1 / 30
+#define FIXED_TIMESTEP 1.0f / 30.0f
 
 #define TIMER_ENABLE  (1 << 7)
 #define TIMER_PERIODIC (1 << 6)
