@@ -6,10 +6,10 @@
 
 const PlayerInput::KeyMapping PlayerInput::keyMappings[] = {
         { Key::Forward,   &KEY_NSPIRE_8 },
-        { Key::Backward,  &KEY_NSPIRE_2 },
-        { Key::Left,      &KEY_NSPIRE_LEFT },
-        { Key::Right,     &KEY_NSPIRE_RIGHT },
-        { Key::Jump,      &KEY_NSPIRE_5 },
+        { Key::Backward,  &KEY_NSPIRE_5 },
+        { Key::Left,      &KEY_NSPIRE_4 },
+        { Key::Right,     &KEY_NSPIRE_6 },
+        { Key::Jump,      &KEY_NSPIRE_VAR },
         { Key::Crouch,    &KEY_NSPIRE_SHIFT },
         { Key::Escape,    &KEY_NSPIRE_ESC },
         { Key::Interact,  &KEY_NSPIRE_DEL }
