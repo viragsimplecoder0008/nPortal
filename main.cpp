@@ -26,6 +26,8 @@ int main(){
     uint32_t last_time = gameClock.get_time_cycles();
     float accumulator = 0.0f;
 
+    GLFix ROUNDED_FIXED_TIMESTEP = GLFix(FIXED_TIMESTEP); // for use in physics calculations. Stick to this same <24>8 fixed-point representation throughout the codebase
+
     gameClock.init_clock();
     logger.init();
     graphics.init();
@@ -55,11 +57,11 @@ int main(){
 
         gameClock.steps_run = 0;
 
-        while (accumulator >= FIXED_TIMESTEP && gameClock.steps_run < MAX_STEPS_PER_FRAME) {
+        while (accumulator >= ROUNDED_FIXED_TIMESTEP && gameClock.steps_run < MAX_STEPS_PER_FRAME) {
 
-            // game update logic here (physics especially) using FIXED_TIMESTEP
+            // game update logic here (physics especially) using ROUNDED_FIXED_TIMESTEP
 
-            accumulator -= FIXED_TIMESTEP;
+            accumulator -= ROUNDED_FIXED_TIMESTEP;
             gameClock.steps_run++;
         }
 
