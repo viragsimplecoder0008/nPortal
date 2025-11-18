@@ -2,8 +2,8 @@
 // Created by Satyamedh on 15-11-2025.
 //
 
-#ifndef NPORTAL_PLAYERINPUT_H
-#define NPORTAL_PLAYERINPUT_H
+#ifndef NPORTAL_InputController_H
+#define NPORTAL_InputController_H
 
 #include <libndls.h>
 #include <cstddef>
@@ -12,7 +12,7 @@
 #undef isKeyPressed
 #endif
 
-class PlayerInput {
+class InputController {
 public:
     enum class Key {
         Forward,
@@ -46,4 +46,4 @@ private:
 };
 
 
-#endif //NPORTAL_PLAYERINPUT_H
+#endif //NPORTAL_InputController_H
