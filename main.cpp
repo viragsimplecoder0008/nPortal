@@ -3,11 +3,12 @@
 #include <cstdint>
 #include <cstdio>
 
-#include "components/Input/Input.h"
+#include "components/InputController/InputController.h"
 #include "components/GameClock/GameClock.h"
 #include "components/Logger/Logger.h"
 #include "components/GraphicsSystem/GraphicsSystem.h"
 #include "components/GameState/GameState.h"
+#include "components/PlayerController/PlayerController.h"
 
 int main(){
 
@@ -15,16 +16,17 @@ int main(){
     int int_state = TCT_Local_Control_Interrupts(-1);
 
     GameClock gameClock;
-    PlayerInput input;
+    InputController input;
     Logger logger;
     GraphicsSystem graphics;
     GameState gameState;
+    PlayerController playerController;
 
     constexpr double FPS_REPORT_INTERVAL_MS = 1000.0;
     uint32_t fps_frame_count = 0;
     double fps_timer_ms = 0.0;
     uint32_t last_time = gameClock.get_time_cycles();
-    float accumulator = 0.0f;
+    GLFix accumulator = 0.0f;
 
     GLFix ROUNDED_FIXED_TIMESTEP = GLFix(FIXED_TIMESTEP); // for use in physics calculations. Stick to this same <24>8 fixed-point representation throughout the codebase
 
@@ -32,6 +34,7 @@ int main(){
     logger.init();
     graphics.init();
     gameState.init();
+    playerController.init(&gameState, &input);
 
     while (true) {
         uint32_t delta_cycles = gameClock.get_delta_cycles(last_time);
@@ -51,7 +54,7 @@ int main(){
 
         input.pollInput();
 
-        if (PlayerInput::isDown(PlayerInput::Key::Escape)) {
+        if (InputController::isDown(InputController::Key::Escape)) {
             break; // Exit the loop if Escape key is pressed
         }
 
@@ -60,6 +63,7 @@ int main(){
         while (accumulator >= ROUNDED_FIXED_TIMESTEP && gameClock.steps_run < MAX_STEPS_PER_FRAME) {
 
             // game update logic here (physics especially) using ROUNDED_FIXED_TIMESTEP
+            playerController.update(ROUNDED_FIXED_TIMESTEP.toFloat());
 
             accumulator -= ROUNDED_FIXED_TIMESTEP;
             gameClock.steps_run++;
