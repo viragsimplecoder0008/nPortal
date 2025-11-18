@@ -20,6 +20,11 @@
 //    unsigned char arrow; /* area of the pad currently touched. see tpad_arrow_t. */
 //} touchpad_report_t;
 
+
+#ifdef isKeyPressed
+#undef isKeyPressed
+#endif
+
 class InputController {
 public:
     enum class Key {
