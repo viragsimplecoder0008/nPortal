@@ -13,7 +13,7 @@ public:
     void init();
     void deinit();
 
-    void loop();
+    void update();
 
 
 private:

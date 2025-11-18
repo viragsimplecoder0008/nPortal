@@ -15,7 +15,7 @@ void GraphicsSystem::deinit() {
     nglUninit();
 }
 
-void GraphicsSystem::loop() {
+void GraphicsSystem::update() {
     // render one frame. This function is called within the main loop
 
     glColor3f(0.4f, 0.7f, 1.0f);
