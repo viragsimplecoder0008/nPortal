@@ -16,12 +16,12 @@
 class Logger {
 public:
     void init();
-    void printf(const char* format, ...);
+    static void printf(const char* format, ...);
     void deinit();
 
 private:
     // tag
-    const char* TAG = "(nPortal) ";
+    static constexpr const char* TAG = "(nPortal) ";
 
 };
 
