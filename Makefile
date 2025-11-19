@@ -11,7 +11,7 @@ LDFLAGS = -Wl,--nspireio
 ZEHNFLAGS = --name "nPortal" --author "Satyamedh Hulyalkar"
 
 ifeq ($(DEBUG),FALSE)
-	GCCFLAGS += -Os
+	GCCFLAGS += -O3 -flto
 else
 	GCCFLAGS += -O0 -g
 endif
