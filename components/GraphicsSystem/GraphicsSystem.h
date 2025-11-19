@@ -6,18 +6,24 @@
 #define NPORTAL_GRAPHICSSYSTEM_H
 
 #include "../../nGL/gl.h"
+#include "../GameState/GameState.h"
+#include "../Logger/Logger.h"
+
 #include <libndls.h>
 
 class GraphicsSystem {
 public:
-    void init();
+    void init(GameState* gameState);
     void deinit();
 
-    void update();
-
+    void update(bool inputChanged);
 
 private:
     COLOR *framebuffer;
+
+    GameState* gameState;
+
+    void setupCamera(bool inputChanged);
 
 };
 

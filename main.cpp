@@ -32,8 +32,8 @@ int main(){
 
     gameClock.init_clock();
     logger.init();
-    graphics.init();
     gameState.init();
+    graphics.init(&gameState);
     playerController.init(&gameState, &input);
 
     while (true) {
@@ -52,7 +52,7 @@ int main(){
             fps_timer_ms = 0.0;
         }
 
-        input.pollInput();
+        bool inputChanged = input.pollInput();
 
         if (InputController::isDown(InputController::Key::Escape)) {
             break; // Exit the loop if Escape key is pressed
@@ -70,7 +70,7 @@ int main(){
         }
 
         // render here
-        graphics.update();
+        graphics.update(inputChanged);
     }
 
     graphics.deinit();
