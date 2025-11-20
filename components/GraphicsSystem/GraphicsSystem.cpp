@@ -3,28 +3,30 @@
 //
 
 #include "GraphicsSystem.h"
-#include "cube.h"
 
 void GraphicsSystem::init(GameState* GameState) {
     nglInit();
     this->screen = newTexture(SCREEN_WIDTH, SCREEN_HEIGHT, 0, false);
     nglSetBuffer(screen->bitmap);
 
-    size_t max_pos = 0;
-    for(auto &&obj : objs_cube_h)
-        if(obj->count_positions > max_pos)
-            max_pos = obj->count_positions;
-
-    this->processed = new ProcessedPosition[max_pos];
-
-    this->angle = 0;
+    this->processed = nullptr;
+    this->processed_size = 0;
 
     this->gameState = GameState;
 }
 
 void GraphicsSystem::deinit() {
+    if (processed) delete[] processed;
     deleteTexture(screen);
     nglUninit();
+}
+
+void GraphicsSystem::EnsureBufferSize(unsigned int count_positions) {
+    if (count_positions > processed_size) {
+        if (processed) delete[] processed;
+        processed = new ProcessedPosition[count_positions];
+        processed_size = count_positions;
+    }
 }
 
 void GraphicsSystem::setupCamera(bool inputChanged) {
@@ -34,7 +36,7 @@ void GraphicsSystem::setupCamera(bool inputChanged) {
 
     glLoadIdentity();
 
-    const Transform &cameraTransform = gameState->player.entity.transform;
+    const Transform &cameraTransform = gameState->player->transform;
 
     // Apply inverse player orientation so the scene renders from the player view.
     nglRotateZ((GLFix(359) - cameraTransform.roll).normaliseAngle());
@@ -54,26 +56,20 @@ void GraphicsSystem::setupCamera(bool inputChanged) {
     }
 }
 
-void GraphicsSystem::update(bool inputChanged) {
-    // render one frame. This function is called within the main loop
+void GraphicsSystem::BeginFrame(bool inputChanged) {
     glPushMatrix();
-        glColor3f(0.4f, 0.7f, 1.0f);
+    glColor3f(0.4f, 0.7f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        this->setupCamera(inputChanged);
-        glTranslatef(0, 0, 400);
-        angle += 1;
-        nglRotateY(angle.normaliseAngle());
+    this->setupCamera(inputChanged);
+}
 
-    glScale3f(100, 100, 100);
-
-    bool transformed = false;
-    for (auto &&obj : objs_cube_h) {
-        glBindTexture(obj->texture);
-        nglDrawArray(obj->vertices, obj->count_vertices, obj->positions, obj->count_positions, processed, obj->draw_mode, !transformed);
-        transformed = true;
-    }
-
+void GraphicsSystem::EndFrame() {
     glPopMatrix();
-
     nglDisplay();
+}
+
+void GraphicsSystem::DrawMesh(const ngl_object* obj, bool transformed) {
+    EnsureBufferSize(obj->count_positions);
+    if (obj->texture) glBindTexture(obj->texture);
+    nglDrawArray(obj->vertices, obj->count_vertices, obj->positions, obj->count_positions, processed, obj->draw_mode, !transformed);
 }

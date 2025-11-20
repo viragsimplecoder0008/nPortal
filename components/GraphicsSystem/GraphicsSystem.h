@@ -18,14 +18,16 @@ public:
     void init(GameState* gameState);
     void deinit();
 
-    void update(bool inputChanged);
+    void BeginFrame(bool inputChanged);
+    void EndFrame();
+    void DrawMesh(const struct ngl_object* obj, bool transformed);
+    void EnsureBufferSize(unsigned int count_positions);
 
 private:
     TEXTURE* screen;
 
     ProcessedPosition* processed;
-
-    GLFix angle;
+    unsigned int processed_size;
 
     GameState* gameState;
 
