@@ -56,7 +56,7 @@ static const ngl_object obj_Cube = {
         nullptr
 };
 
-static const ngl_object *objs_cube_h[] = {
+static const ngl_object *objs_cube_h[] __attribute__((unused)) = {
         &obj_Cube
 };
 
