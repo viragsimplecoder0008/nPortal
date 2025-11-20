@@ -8,7 +8,9 @@
 #include "components/Logger/Logger.h"
 #include "components/GraphicsSystem/GraphicsSystem.h"
 #include "components/GameState/GameState.h"
-#include "components/PlayerController/PlayerController.h"
+#include "components/World/WorldFactory.h"
+#include "components/World/IWorld.h"
+#include "components/ResourceManager/ResourceManager.h"
 
 int main(){
 
@@ -20,7 +22,6 @@ int main(){
     Logger logger;
     GraphicsSystem graphics;
     GameState gameState;
-    PlayerController playerController;
 
     constexpr double FPS_REPORT_INTERVAL_MS = 1000.0;
     uint32_t fps_frame_count = 0;
@@ -32,9 +33,21 @@ int main(){
 
     gameClock.init_clock();
     logger.init();
+    ResourceManager::Instance().LoadAllAssets();
     gameState.init();
     graphics.init(&gameState);
-    playerController.init(&gameState, &input);
+    
+    // Initialize player controller component
+    if (auto* pc = gameState.player->GetComponent<PlayerControllerComponent>()) {
+        pc->Init(&input);
+    }
+
+    auto world = WorldFactory::Instance().CreateWorld("TestLevel");
+    if (world) {
+        world->Load();
+    } else {
+        // Fallback or error handling
+    }
 
     while (true) {
         uint32_t delta_cycles = gameClock.get_delta_cycles(last_time);
@@ -63,15 +76,20 @@ int main(){
         while (accumulator >= ROUNDED_FIXED_TIMESTEP && gameClock.steps_run < MAX_STEPS_PER_FRAME) {
 
             // game update logic here (physics especially) using ROUNDED_FIXED_TIMESTEP
-            playerController.update(ROUNDED_FIXED_TIMESTEP.toFloat());
+            gameState.player->Update(ROUNDED_FIXED_TIMESTEP.toFloat());
+            if (world) world->Update(ROUNDED_FIXED_TIMESTEP.toFloat());
 
             accumulator -= ROUNDED_FIXED_TIMESTEP;
             gameClock.steps_run++;
         }
 
         // render here
-        graphics.update(inputChanged);
+        graphics.BeginFrame(inputChanged);
+        if (world) world->Draw(&graphics);
+        graphics.EndFrame();
     }
+
+    if (world) world->Unload();
 
     graphics.deinit();
     logger.deinit();
