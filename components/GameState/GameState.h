@@ -8,11 +8,11 @@
 #include <string>
 
 #include "../../nGL/gl.h"
-
+#include "../../nGL/fastmath.h"
 
 struct Transform {
     GLFix x, y, z;
-    GLFix pitch, yaw, roll;
+    FFix pitch, yaw, roll;
 };
 
 struct PhysicsBody {
