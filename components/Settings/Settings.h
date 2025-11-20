@@ -10,6 +10,7 @@
 #include "../../nGL/gl.h"
 
 #define MAX_MOVEMENT_SPEED GLFix(5.0f) // units per second
-#define TOUCHPAD_SENSITIVITY 1.0f   // multiplier for touchpad input
+#define TOUCHPAD_SENSITIVITY_X 2.0f // separate sensitivity for X axis
+#define TOUCHPAD_SENSITIVITY_Y 1.0f // separate sensitivity for Y axis
 
 #endif //NPORTAL_SETTINGS_H
