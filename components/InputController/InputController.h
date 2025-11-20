@@ -32,6 +32,8 @@ public:
         Backward,
         Left,
         Right,
+        Up,
+        Down,
         Jump,
         Crouch,
         Escape,

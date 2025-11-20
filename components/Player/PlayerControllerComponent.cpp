@@ -42,7 +42,7 @@ void PlayerControllerComponent::Update(float deltaTime) {
     // use functions from fastmath.h to compute forward vector based on yaw and pitch. FLTs ftw
     VECTOR3 forward = {
             fast_cos(gameObject->transform.pitch) * fast_sin(gameObject->transform.yaw),
-            fast_sin(gameObject->transform.pitch),
+            0, // no flying
             fast_cos(gameObject->transform.pitch) * fast_cos(gameObject->transform.yaw)
     };
     VECTOR3 right = {
@@ -60,6 +60,10 @@ void PlayerControllerComponent::Update(float deltaTime) {
         velocity += right;
     if (InputController::isDown(InputController::Key::Left))
         velocity -= right;
+    if (InputController::isDown(InputController::Key::Up)) // TODO: Remove flying later
+        velocity.y += moveSpeed;
+    if (InputController::isDown(InputController::Key::Down))
+        velocity.y -= moveSpeed;
 
     // Normalize the velocity vector to prevent faster diagonal movement. There is no fast normalize, so use the builtin method
     float length = sqrt(velocity.x.toFloat() * velocity.x.toFloat() +
