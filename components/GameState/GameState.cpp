@@ -6,22 +6,27 @@
 
 void GameState::init() {
     // Initialize player
-    player.entity.transform.x = GLFix(0);
-    player.entity.transform.y = GLFix(0);
-    player.entity.transform.z = GLFix(0);
-    player.entity.transform.pitch = FFix(0);
-    player.entity.transform.yaw = FFix(0);
-    player.entity.transform.roll = FFix(0);
+    player = std::make_unique<Player>();
 
-    player.entity.physics.velocityX = GLFix(0);
-    player.entity.physics.velocityY = GLFix(0);
-    player.entity.physics.velocityZ = GLFix(0);
-    player.entity.physics.accelerationX = GLFix(0);
-    player.entity.physics.accelerationY = GLFix(0);
-    player.entity.physics.accelerationZ = GLFix(0);
-    player.entity.physics.onGround = true;
+    player->transform.x = GLFix(0);
+    player->transform.y = GLFix(0);
+    player->transform.z = GLFix(0);
+    player->transform.pitch = FFix(0);
+    player->transform.yaw = FFix(0);
+    player->transform.roll = FFix(0);
 
-    player.health = 100;
+    auto* physics = player->GetComponent<PhysicsBody>();
+    if (physics) {
+        physics->velocityX = GLFix(0);
+        physics->velocityY = GLFix(0);
+        physics->velocityZ = GLFix(0);
+        physics->accelerationX = GLFix(0);
+        physics->accelerationY = GLFix(0);
+        physics->accelerationZ = GLFix(0);
+        physics->onGround = true;
+    }
+
+    player->health = 100;
 
     // Set initial level
     currentLevel = "Testlvl";

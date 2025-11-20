@@ -2,16 +2,11 @@
 // Created by Satyamedh on 18-11-2025.
 //
 
-#include "PlayerController.h"
-#include "../../nGL/fastmath.h"
-#include <algorithm>
+#include "PlayerControllerComponent.h"
+#include "../ECS/GameObject.h"
 
-void PlayerController::init(GameState* gs, InputController* inp) {
-    this->gameState = gs;
-    this->input = inp;
-}
-
-void PlayerController::update(float deltaTime) {
+void PlayerControllerComponent::Update(float deltaTime) {
+    if (!input || !gameObject) return;
 
     // assume input is already polled before this function is called
 
@@ -21,22 +16,22 @@ void PlayerController::update(float deltaTime) {
         int16_t delta_x = ((input->touchpad.x) - (tp_last_x)) / 50;
         int16_t delta_y = ((input->touchpad.y) - (tp_last_y)) / 50;
 
-        gameState->player.entity.transform.yaw += FFix(static_cast<float>(delta_x) * TOUCHPAD_SENSITIVITY_X);
-        gameState->player.entity.transform.pitch -= FFix(static_cast<float>(delta_y) * TOUCHPAD_SENSITIVITY_Y);
+        gameObject->transform.yaw += FFix(static_cast<float>(delta_x) * TOUCHPAD_SENSITIVITY_X);
+        gameObject->transform.pitch -= FFix(static_cast<float>(delta_y) * TOUCHPAD_SENSITIVITY_Y);
     }
 
     tp_had_contact = input->touchpad.contact;
     tp_last_x = input->touchpad.x;
     tp_last_y = input->touchpad.y;
 
-    if (gameState->player.entity.transform.yaw > FFix(360.0f)) {
-        gameState->player.entity.transform.yaw -= FFix(360.0f);
-    } else if (gameState->player.entity.transform.yaw < FFix(0.0f)) {
-        gameState->player.entity.transform.yaw += FFix(360.0f);
+    if (gameObject->transform.yaw > FFix(360.0f)) {
+        gameObject->transform.yaw -= FFix(360.0f);
+    } else if (gameObject->transform.yaw < FFix(0.0f)) {
+        gameObject->transform.yaw += FFix(360.0f);
     }
 
-    gameState->player.entity.transform.pitch = std::clamp(
-            gameState->player.entity.transform.pitch,
+    gameObject->transform.pitch = std::clamp(
+            gameObject->transform.pitch,
             GLFix(-89.9f),
             GLFix(89.9f)
     );
@@ -46,14 +41,14 @@ void PlayerController::update(float deltaTime) {
 
     // use functions from fastmath.h to compute forward vector based on yaw and pitch. FLTs ftw
     VECTOR3 forward = {
-            fast_cos(gameState->player.entity.transform.pitch) * fast_sin(gameState->player.entity.transform.yaw),
-            fast_sin(gameState->player.entity.transform.pitch),
-            fast_cos(gameState->player.entity.transform.pitch) * fast_cos(gameState->player.entity.transform.yaw)
+            fast_cos(gameObject->transform.pitch) * fast_sin(gameObject->transform.yaw),
+            fast_sin(gameObject->transform.pitch),
+            fast_cos(gameObject->transform.pitch) * fast_cos(gameObject->transform.yaw)
     };
     VECTOR3 right = {
-            fast_sin(gameState->player.entity.transform.yaw + FFix(90)),
+            fast_sin(gameObject->transform.yaw + FFix(90)),
             FFix(0),
-            fast_cos(gameState->player.entity.transform.yaw + FFix(90))
+            fast_cos(gameObject->transform.yaw + FFix(90))
     };
 
     VECTOR3 velocity = {0, 0, 0}; // TODO: Find a cleaner way to add and subtract these
@@ -77,13 +72,11 @@ void PlayerController::update(float deltaTime) {
     }
 
     velocity *= moveSpeed;
-    gameState->player.entity.transform.x += velocity.x;
-    gameState->player.entity.transform.y += velocity.y;
-    gameState->player.entity.transform.z += velocity.z;
+    gameObject->transform.x += velocity.x;
+    gameObject->transform.y += velocity.y;
+    gameObject->transform.z += velocity.z;
 
     // TODO: for now, directly modify position. Later, use physics engine and velocity
-
-
 }
 
 
