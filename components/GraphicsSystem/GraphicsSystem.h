@@ -6,6 +6,8 @@
 #define NPORTAL_GRAPHICSSYSTEM_H
 
 #include "../../nGL/gl.h"
+#include "../../nGL/gldrawarray.h"
+#include "../../nGL/texturetools.h"
 #include "../GameState/GameState.h"
 #include "../Logger/Logger.h"
 
@@ -19,7 +21,11 @@ public:
     void update(bool inputChanged);
 
 private:
-    COLOR *framebuffer;
+    TEXTURE* screen;
+
+    ProcessedPosition* processed;
+
+    GLFix angle;
 
     GameState* gameState;
 
