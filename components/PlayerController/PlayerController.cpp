@@ -3,7 +3,8 @@
 //
 
 #include "PlayerController.h"
-
+#include "../../nGL/fastmath.h"
+#include <algorithm>
 
 void PlayerController::init(GameState* gs, InputController* inp) {
     this->gameState = gs;
@@ -14,38 +15,75 @@ void PlayerController::update(float deltaTime) {
 
     // assume input is already polled before this function is called
 
+    // TODO: implement acceleration for more accurate touchpad movement
+
+    if (tp_had_contact && input->touchpad.contact) {
+        int16_t delta_x = (static_cast<int16_t>(input->touchpad.x) - static_cast<int16_t>(tp_last_x)) / 50;
+        int16_t delta_y = (static_cast<int16_t>(input->touchpad.y) - static_cast<int16_t>(tp_last_y)) / 50;
+
+        gameState->player.entity.transform.yaw += FFix(static_cast<float>(delta_x) * TOUCHPAD_SENSITIVITY_X);
+        gameState->player.entity.transform.pitch -= FFix(static_cast<float>(delta_y) * TOUCHPAD_SENSITIVITY_Y);
+    }
+
+    tp_had_contact = input->touchpad.contact;
+    tp_last_x = input->touchpad.x;
+    tp_last_y = input->touchpad.y;
+
+    if (gameState->player.entity.transform.yaw > FFix(360.0f)) {
+        gameState->player.entity.transform.yaw -= FFix(360.0f);
+    } else if (gameState->player.entity.transform.yaw < FFix(0.0f)) {
+        gameState->player.entity.transform.yaw += FFix(360.0f);
+    }
+
+    gameState->player.entity.transform.pitch = std::clamp(
+            gameState->player.entity.transform.pitch,
+            GLFix(-89.9f),
+            GLFix(89.9f)
+    );
+
     // Simple movement logic
     GLFix moveSpeed = GLFix(MAX_MOVEMENT_SPEED) * GLFix(deltaTime); // 5 units per second
 
-    // directional movement based on yaw. use C builtin trig functions for now but switch to TODO: lookup tables later
-    GLFix forwardX = GLFix(cosf(static_cast<float>(gameState->player.entity.transform.yaw.toFloat() * (3.14159265f / 180.0f))));
-    GLFix forwardZ = GLFix(sinf(static_cast<float>(gameState->player.entity.transform.yaw.toFloat() * (3.14159265f / 180.0f))));
-    GLFix rightX = GLFix(cosf(static_cast<float>((gameState->player.entity.transform.yaw + GLFix(90)).toFloat() * (3.14159265f / 180.0f))));
-    GLFix rightZ = GLFix(sinf(static_cast<float>((gameState->player.entity.transform.yaw + GLFix(90)).toFloat() * (3.14159265f / 180.0f))));
-    if (InputController::isDown(InputController::Key::Forward)) {
-        gameState->player.entity.transform.x += forwardX * moveSpeed;
-        gameState->player.entity.transform.z += forwardZ * moveSpeed;
-    }
-    else if (InputController::isDown(InputController::Key::Backward)) { // can only go forwards or backwards at once
-        gameState->player.entity.transform.x -= forwardX * moveSpeed;
-        gameState->player.entity.transform.z -= forwardZ * moveSpeed;
+    // use functions from fastmath.h to compute forward vector based on yaw and pitch. FLTs ftw
+    VECTOR3 forward = {
+            fast_cos(gameState->player.entity.transform.pitch) * fast_sin(gameState->player.entity.transform.yaw),
+            fast_sin(gameState->player.entity.transform.pitch),
+            fast_cos(gameState->player.entity.transform.pitch) * fast_cos(gameState->player.entity.transform.yaw)
+    };
+    VECTOR3 right = {
+            fast_sin(gameState->player.entity.transform.yaw + FFix(90)),
+            FFix(0),
+            fast_cos(gameState->player.entity.transform.yaw + FFix(90))
+    };
+
+    VECTOR3 velocity = {0, 0, 0}; // TODO: Find a cleaner way to add and subtract these
+    if (InputController::isDown(InputController::Key::Forward))
+        velocity += forward;
+    if (InputController::isDown(InputController::Key::Backward))
+        velocity -= forward;
+    if (InputController::isDown(InputController::Key::Right))
+        velocity += right;
+    if (InputController::isDown(InputController::Key::Left))
+        velocity -= right;
+
+    // Normalize the velocity vector to prevent faster diagonal movement. There is no fast normalize, so use the builtin method
+    float length = sqrt(velocity.x.toFloat() * velocity.x.toFloat() +
+                              velocity.y.toFloat() * velocity.y.toFloat() +
+                              velocity.z.toFloat() * velocity.z.toFloat());
+    if (length > 0.0f) {
+        velocity.x = GLFix(velocity.x.toFloat() / length);
+        velocity.y = GLFix(velocity.y.toFloat() / length);
+        velocity.z = GLFix(velocity.z.toFloat() / length);
     }
 
-    if (InputController::isDown(InputController::Key::Right)) { // strafing
-        gameState->player.entity.transform.x += rightX * moveSpeed;
-        gameState->player.entity.transform.z += rightZ * moveSpeed;
-    }
-    else if (InputController::isDown(InputController::Key::Left)) { // can only go left or right at once
-        gameState->player.entity.transform.x -= rightX * moveSpeed;
-        gameState->player.entity.transform.z -= rightZ * moveSpeed;
-    }
+    velocity *= moveSpeed;
+    gameState->player.entity.transform.x += velocity.x;
+    gameState->player.entity.transform.y += velocity.y;
+    gameState->player.entity.transform.z += velocity.z;
 
-    // handle touchpad input for looking around. Also implement TODO: acceleration for better control
-    float touchVelX = static_cast<float>(input->touchpad.x_velocity) * TOUCHPAD_SENSITIVITY; // sensitivity multiplier
-    gameState->player.entity.transform.yaw += GLFix(touchVelX * deltaTime);
+    // TODO: for now, directly modify position. Later, use physics engine and velocity
 
-    float touchVelY = static_cast<float>(input->touchpad.y_velocity) * TOUCHPAD_SENSITIVITY;
-    gameState->player.entity.transform.pitch += GLFix(touchVelY * deltaTime); // TODO: Optimize!
+
 }
 
 
