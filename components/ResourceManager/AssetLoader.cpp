@@ -1,15 +1,13 @@
 #include "ResourceManager.h"
 #include "../../assets/cube.h"
+#include "../../assets/SimpleWorld_Cube.h"
+#include "../../assets/SimpleWorld_Plane.h"
 
 void ResourceManager::LoadAllAssets() {
-    // Register Cube
-    // We can iterate over the array if we want to register all objects in the file
-    // For now, we know there is one object "Cube"
-    
-    // Note: obj2ngl generates names based on the object name in the .obj file.
-    // Here it is "Cube".
-    
+    // Register Cube (TestLevel)
     RegisterModel("Cube", &obj_Cube);
     
-    // If we had more assets, we would include them and register them here.
+    // Register SimpleWorld assets
+    RegisterModel("SimpleWorld_Cube", &SimpleWorld::obj_Cube);
+    RegisterModel("SimpleWorld_Plane", &SimpleWorld::obj_Plane);
 }

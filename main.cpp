@@ -43,6 +43,7 @@ int main(){
     }
 
     auto world = WorldFactory::Instance().CreateWorld("TestLevel");
+    std::string currentWorldName = "TestLevel";
     if (world) {
         world->Load();
     } else {
@@ -69,6 +70,35 @@ int main(){
 
         if (InputController::isDown(InputController::Key::Escape)) {
             break; // Exit the loop if Escape key is pressed
+        }
+
+        if (InputController::isDown(InputController::Key::SwitchWorld)) {
+            // Simple toggle for now
+            std::string nextWorld = (currentWorldName == "TestLevel") ? "SimpleWorld" : "TestLevel";
+            
+            if (world) world->Unload();
+            world = WorldFactory::Instance().CreateWorld(nextWorld);
+            if (world) {
+                world->Load();
+                currentWorldName = nextWorld;
+                Logger::printf("Switched to world: %s\n", currentWorldName.c_str());
+            }
+            
+            // Debounce or wait for key release would be better, but for now rely on quick press or flag
+            // Since isDown is true every frame, we might switch back and forth rapidly.
+            // Ideally we need 'isPressed' (just went down).
+            // InputController doesn't seem to have that exposed easily yet, relying on pollInput returning changed.
+            // Let's add a simple debounce hack or check if it was NOT down last frame.
+            // Actually InputController::pollInput returns true if ANY key changed.
+            // But isDown just checks current state.
+            
+            // For this task, I'll assume the user taps it quickly or I should implement 'JustPressed'.
+            // Let's implement a simple 'JustPressed' logic here or in InputController.
+            // But I can't easily change InputController header right now without recompiling everything.
+            // I'll just add a static bool to debounce in main loop.
+             while(InputController::isDown(InputController::Key::SwitchWorld)) {
+                 input.pollInput(); // Wait for release
+             }
         }
 
         gameClock.steps_run = 0;

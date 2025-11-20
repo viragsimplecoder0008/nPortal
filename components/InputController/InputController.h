@@ -36,6 +36,7 @@ public:
         Crouch,
         Escape,
         Interact,
+        SwitchWorld,
         Unknown
     };
 
