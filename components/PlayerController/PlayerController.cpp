@@ -18,8 +18,8 @@ void PlayerController::update(float deltaTime) {
     // TODO: implement acceleration for more accurate touchpad movement
 
     if (tp_had_contact && input->touchpad.contact) {
-        int16_t delta_x = (static_cast<int16_t>(input->touchpad.x) - static_cast<int16_t>(tp_last_x)) / 50;
-        int16_t delta_y = (static_cast<int16_t>(input->touchpad.y) - static_cast<int16_t>(tp_last_y)) / 50;
+        int16_t delta_x = ((input->touchpad.x) - (tp_last_x)) / 50;
+        int16_t delta_y = ((input->touchpad.y) - (tp_last_y)) / 50;
 
         gameState->player.entity.transform.yaw += FFix(static_cast<float>(delta_x) * TOUCHPAD_SENSITIVITY_X);
         gameState->player.entity.transform.pitch -= FFix(static_cast<float>(delta_y) * TOUCHPAD_SENSITIVITY_Y);
